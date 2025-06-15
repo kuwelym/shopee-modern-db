@@ -1,0 +1,15 @@
+{
+  "extends": "stylelint-config-standard-scss",
+  "rules": {
+    "selector-class-pattern": null,
+    "keyframes-name-pattern": null,
+    "scss/at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": ["theme"]
+      }
+    ],
+    "declaration-empty-line-before": "never",
+    "rule-empty-line-before": "always"
+  }
+} 

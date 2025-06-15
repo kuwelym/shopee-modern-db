@@ -1,0 +1,21 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:stylelint/recommended"
+  ],
+  "plugins": ["stylelint"],
+  "rules": {
+    "eol-last": ["error", "always"],
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.scss", "**/*.css"],
+      "extends": ["plugin:stylelint/recommended"],
+      "rules": {
+        "eol-last": ["error", "always"],
+        "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 1 }]
+      }
+    }
+  ]
+} 

@@ -1,0 +1,23 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    networks:
+      - shopee-network
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - shopee-network
+
+networks:
+  shopee-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 
