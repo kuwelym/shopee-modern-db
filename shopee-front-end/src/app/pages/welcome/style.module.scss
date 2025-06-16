@@ -27,7 +27,22 @@
 .message {
   font-size: 1.2rem;
   color: #333;
+  margin-bottom: 20px;
+}
+
+.userInfo {
   margin-bottom: 30px;
+}
+
+.userBadge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ee4d2d 0%, #ff6b47 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .logoutButton {

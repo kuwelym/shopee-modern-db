@@ -1,35 +1,51 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './style.module.scss';
+import { useAuth } from '@/app/contexts/AuthContext';
 
 export default function Welcome() {
   const router = useRouter();
-  const [username, setUsername] = useState<string>('');
+  const { user, logout, isLoading } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!isLoading && !user) {
       router.push('/pages/auth/login');
-      return;
     }
-
-    // Get username from token or API
-    // For now, we'll just show a generic welcome
-    setUsername('User');
-  }, [router]);
+  }, [user, isLoading, router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    logout();
     router.push('/pages/auth/login');
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.welcomeBox}>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.welcomeBox}>
         <h1 className={styles.title}>Welcome to Shopee!</h1>
-        <p className={styles.message}>Hello, {username}! You have successfully logged in.</p>
+        <p className={styles.message}>
+          Hello, {user.username}! You are logged in as a <strong>{user.userType.toLowerCase()}</strong>.
+        </p>
+        <div className={styles.userInfo}>
+          <div className={styles.userBadge}>
+            {user.userType === 'BUYER' ? '🛍️' : '🏪'} {user.userType}
+          </div>
+        </div>
         <button onClick={handleLogout} className={styles.logoutButton}>
           Logout
         </button>
