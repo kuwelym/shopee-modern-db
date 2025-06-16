@@ -1,35 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './style.module.scss';
 import Notification from '@/app/components/Notification';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useLogin } from '@/app/pages/auth/login/hooks';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const router = useRouter();
-  const { login, isLoading } = useAuth();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login(username, password);
-      setNotification({ message: 'Login successful!', type: 'success' });
-      setTimeout(() => {
-        router.push('/pages/welcome');
-      }, 1000);
-    } catch (error) {
-      console.error('Login error:', error);
-      setNotification({ 
-        message: error instanceof Error ? error.message : 'Login failed', 
-        type: 'error' 
-      });
-    }
-  };
+  const { form, isLoading, notification, onSubmit, clearNotification } = useLogin();
+  const { register, formState: { errors } } = form;
 
   return (
     <div className={styles.container}>
@@ -37,28 +15,38 @@ export default function Login() {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)}
+          onClose={clearNotification}
         />
       )}
       <div className={styles.loginBox}>
         <h1 className={styles.title}>Login</h1>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={styles.input}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-            required
-          />
+        <form onSubmit={onSubmit} className={styles.form}>
+          <div>
+            <input
+              type="text"
+              placeholder="Username"
+              {...register('username', { required: 'Username is required' })}
+              className={styles.input}
+            />
+            {errors.username && (
+              <span style={{ color: 'red', fontSize: '12px' }}>
+                {errors.username.message}
+              </span>
+            )}
+          </div>
+          <div>
+            <input
+              type="password"
+              placeholder="Password"
+              {...register('password', { required: 'Password is required' })}
+              className={styles.input}
+            />
+            {errors.password && (
+              <span style={{ color: 'red', fontSize: '12px' }}>
+                {errors.password.message}
+              </span>
+            )}
+          </div>
           <button type="submit" className={styles.button} disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Login'}
           </button>

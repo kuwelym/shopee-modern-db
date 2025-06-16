@@ -1,71 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '../style.module.scss';
 import Notification from '@/app/components/Notification';
-import { apiService } from '@/app/services/api';
-import { BuyerRegistrationRequest } from '@/app/types/auth';
+import { useBuyerRegister } from '@/app/pages/auth/register/buyer/hooks';
 
 export default function BuyerRegister() {
-  const [formData, setFormData] = useState<BuyerRegistrationRequest>({
-    username: '',
-    password: '',
-    email: '',
-    phoneNumber: '',
-    fullName: '',
-    address: '',
-  });
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const router = useRouter();
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation
-    if (formData.password !== confirmPassword) {
-      setNotification({ message: 'Passwords do not match', type: 'error' });
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setNotification({ message: 'Password must be at least 6 characters', type: 'error' });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await apiService.registerBuyer(formData);
-      
-      if (response.success) {
-        setNotification({ message: 'Registration successful! Redirecting to login...', type: 'success' });
-        setTimeout(() => {
-          router.push('/pages/auth/login');
-        }, 2000);
-      } else {
-        setNotification({ message: response.message || 'Registration failed', type: 'error' });
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      setNotification({ 
-        message: error instanceof Error ? error.message : 'Registration failed', 
-        type: 'error' 
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { form, isLoading, notification, onSubmit, clearNotification } = useBuyerRegister();
+  const { register, formState: { errors } } = form;
 
   return (
     <div className={styles.container}>
@@ -73,78 +15,107 @@ export default function BuyerRegister() {
         <Notification
           message={notification.message}
           type={notification.type}
-          onClose={() => setNotification(null)}
+          onClose={clearNotification}
         />
       )}
       <div className={styles.registerBox}>
         <h1 className={styles.title}>🛍️ Register as Buyer</h1>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={onSubmit} className={styles.form}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <input
+                type="text"
+                placeholder="Username *"
+                {...register('username', { required: 'Username is required' })}
+                className={styles.input}
+              />
+              {errors.username && (
+                <span style={{ color: 'red', fontSize: '12px' }}>
+                  {errors.username.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <input
+                type="email"
+                placeholder="Email *"
+                {...register('email', { 
+                  required: 'Email is required',
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: 'Invalid email address'
+                  }
+                })}
+                className={styles.input}
+              />
+              {errors.email && (
+                <span style={{ color: 'red', fontSize: '12px' }}>
+                  {errors.email.message}
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div>
             <input
               type="text"
-              name="username"
-              placeholder="Username *"
-              value={formData.username}
-              onChange={handleInputChange}
+              placeholder="Full Name"
+              {...register('fullName')}
               className={styles.input}
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email *"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={styles.input}
-              required
             />
           </div>
           
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            value={formData.fullName}
-            onChange={handleInputChange}
-            className={styles.input}
-          />
+          <div>
+            <input
+              type="tel"
+              placeholder="Phone Number"
+              {...register('phoneNumber')}
+              className={styles.input}
+            />
+          </div>
           
-          <input
-            type="tel"
-            name="phoneNumber"
-            placeholder="Phone Number"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            className={styles.input}
-          />
-          
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleInputChange}
-            className={styles.input}
-          />
+          <div>
+            <input
+              type="text"
+              placeholder="Address"
+              {...register('address')}
+              className={styles.input}
+            />
+          </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password *"
-              value={formData.password}
-              onChange={handleInputChange}
-              className={styles.input}
-              required
-            />
-            <input
-              type="password"
-              placeholder="Confirm Password *"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className={styles.input}
-              required
-            />
+            <div>
+              <input
+                type="password"
+                placeholder="Password *"
+                {...register('password', { 
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters'
+                  }
+                })}
+                className={styles.input}
+              />
+              {errors.password && (
+                <span style={{ color: 'red', fontSize: '12px' }}>
+                  {errors.password.message}
+                </span>
+              )}
+            </div>
+            <div>
+              <input
+                type="password"
+                placeholder="Confirm Password *"
+                {...register('confirmPassword', { required: 'Please confirm your password' })}
+                className={styles.input}
+              />
+              {errors.confirmPassword && (
+                <span style={{ color: 'red', fontSize: '12px' }}>
+                  {errors.confirmPassword.message}
+                </span>
+              )}
+            </div>
           </div>
           
           <button type="submit" className={styles.button} disabled={isLoading}>
