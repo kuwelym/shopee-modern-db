@@ -1,4 +1,4 @@
-package kuwelym.shopee.config
+package kuwelym.shopee.infrastructure.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,4 +16,4 @@ class RedisConfig {
         template.valueSerializer = StringRedisSerializer()
         return template
     }
-} 
+}

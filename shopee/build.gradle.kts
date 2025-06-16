@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.25"
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 group = "kuwelym"
@@ -24,7 +25,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("io.jsonwebtoken:jjwt:0.12.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.1")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.1")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.1")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -43,4 +46,20 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+ktlint {
+    version.set("1.2.1")
+
+    verbose.set(true)
+
+    outputToConsole.set(true)
+
+    filter {
+        exclude { element -> element.file.path.contains("build/") }
+    }
+}
+
+tasks.build {
+    dependsOn(tasks.ktlintFormat)
 }

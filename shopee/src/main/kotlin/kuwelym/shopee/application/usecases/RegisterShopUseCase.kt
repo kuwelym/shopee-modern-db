@@ -1,0 +1,76 @@
+package kuwelym.shopee.application.usecases
+
+import kuwelym.shopee.application.dto.ShopRegistrationRequest
+import kuwelym.shopee.domain.entities.Shop
+import kuwelym.shopee.domain.repositories.ShopRepository
+import kuwelym.shopee.domain.services.PasswordService
+import org.springframework.stereotype.Service
+
+interface RegisterShopUseCase {
+    suspend fun execute(request: ShopRegistrationRequest): Result<Shop>
+}
+
+@Service
+class RegisterShopUseCaseImpl(
+    private val shopRepository: ShopRepository,
+    private val passwordService: PasswordService,
+) : RegisterShopUseCase {
+    override suspend fun execute(request: ShopRegistrationRequest): Result<Shop> {
+        return try {
+            // Validate request
+            validateRegistrationRequest(request)
+
+            // Check if shop already exists
+            if (shopRepository.existsByUsername(request.username)) {
+                return Result.failure(IllegalArgumentException("Username already exists"))
+            }
+
+            if (shopRepository.existsByEmail(request.email)) {
+                return Result.failure(IllegalArgumentException("Email already exists"))
+            }
+
+            if (shopRepository.existsByTaxCode(request.taxCode)) {
+                return Result.failure(IllegalArgumentException("Tax code already exists"))
+            }
+
+            if (shopRepository.existsByShopName(request.shopName)) {
+                return Result.failure(IllegalArgumentException("Shop name already exists"))
+            }
+
+            // Create shop entity
+            val shop =
+                Shop(
+                    username = request.username,
+                    password = passwordService.encode(request.password),
+                    email = request.email,
+                    phoneNumber = request.phoneNumber,
+                    businessName = request.businessName,
+                    shopName = request.shopName,
+                    taxCode = request.taxCode,
+                    businessAddress = request.businessAddress,
+                    businessDescription = request.businessDescription,
+                    businessType = request.businessType,
+                )
+
+            // Validate domain business rules
+            if (!shop.isValidForRegistration()) {
+                return Result.failure(IllegalArgumentException("Invalid shop registration data"))
+            }
+
+            // Save to repository
+            val savedShop = shopRepository.save(shop)
+            Result.success(savedShop)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun validateRegistrationRequest(request: ShopRegistrationRequest) {
+        require(request.username.isNotBlank()) { "Username cannot be blank" }
+        require(request.password.isNotBlank()) { "Password cannot be blank" }
+        require(request.email.isNotBlank()) { "Email cannot be blank" }
+        require(request.businessName.isNotBlank()) { "Business name cannot be blank" }
+        require(request.shopName.isNotBlank()) { "Shop name cannot be blank" }
+        require(request.taxCode.isNotBlank()) { "Tax code cannot be blank" }
+    }
+}

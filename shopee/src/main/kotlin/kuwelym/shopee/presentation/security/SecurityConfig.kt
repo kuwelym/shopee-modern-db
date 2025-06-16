@@ -1,4 +1,4 @@
-package kuwelym.shopee.security
+package kuwelym.shopee.presentation.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,7 +27,9 @@ class SecurityConfig {
                 it.requestMatchers("/auth/**").permitAll()
                 it.anyRequest().authenticated()
             }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
         return http.build()
     }
 
@@ -43,4 +45,4 @@ class SecurityConfig {
         source.registerCorsConfiguration("/**", config)
         return CorsFilter(source)
     }
-} 
+}
