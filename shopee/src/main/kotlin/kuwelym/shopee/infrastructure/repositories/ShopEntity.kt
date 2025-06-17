@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Document(collection = "shops")
 data class ShopEntity(
-    @Id val id: String? = null,
+    @Id val id: String,
     @Indexed(unique = true)
     val username: String,
     val password: String,

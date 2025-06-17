@@ -33,11 +33,13 @@ class JwtTokenService(
 
     override fun generateToken(
         username: String,
+        userType: String,
         expires: Long?,
     ): String {
         val tokenExpirationTime = expires ?: expirationTime.toLong()
         return Jwts.builder()
             .subject(username)
+            .claim("userType", userType)
             .issuedAt(Date())
             .expiration(Date(System.currentTimeMillis() + tokenExpirationTime))
             .signWith(key, Jwts.SIG.HS384)
@@ -45,6 +47,8 @@ class JwtTokenService(
     }
 
     override fun extractUsername(token: String): String? = extractClaims(token) { it.subject }
+
+    fun extractUserType(token: String): String? = extractClaims(token) { it["userType"] as? String }
 
     override fun validateToken(token: String): Boolean {
         return try {

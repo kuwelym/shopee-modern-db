@@ -45,6 +45,33 @@
   margin-bottom: 10px;
 }
 
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgb(40 167 69 / 20%);
+  min-width: 200px;
+
+  &:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgb(40 167 69 / 30%);
+  }
+}
+
 .logoutButton {
   background-color: #ee4d2d;
   color: white;
@@ -54,6 +81,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  min-width: 200px;
 
   &:hover {
     background-color: #e63e1d;

@@ -3,6 +3,7 @@ package kuwelym.shopee.domain.services
 interface TokenService {
     fun generateToken(
         username: String,
+        userType: String,
         expires: Long? = null,
     ): String
 

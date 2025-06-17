@@ -2,19 +2,30 @@ package kuwelym.shopee.presentation.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+) {
+    init {
+        // Set security context holder strategy to work with coroutines
+        org.springframework.security.core.context.SecurityContextHolder.setStrategyName(
+            org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL,
+        )
+    }
+
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
@@ -25,11 +36,16 @@ class SecurityConfig {
             .cors { }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/**").permitAll()
+                // only permit get request to products
+                it.requestMatchers(HttpMethod.PUT, "/products/**")
+                it.requestMatchers(HttpMethod.DELETE, "/products/**")
+                it.requestMatchers("/products/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 

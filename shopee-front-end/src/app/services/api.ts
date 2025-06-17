@@ -7,6 +7,13 @@ import {
   BuyerResponse,
   ShopResponse,
 } from '../types/auth';
+import {
+  Product,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ProductsApiResponse,
+  ProductApiResponse,
+} from '../types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -93,6 +100,57 @@ class ApiService {
 
   getAuthToken(): string | null {
     return localStorage.getItem('token');
+  }
+
+  // Product-related methods
+  async getAllProducts(): Promise<ProductsApiResponse> {
+    return this.makeRequest<Product[]>('/products', {
+      method: 'GET',
+    });
+  }
+
+  async getMyProducts(): Promise<ProductsApiResponse> {
+    return this.makeRequest<Product[]>(`/products/my-products`, {
+      method: 'GET',
+    });
+  }
+
+  async getProductById(id: string): Promise<ProductApiResponse> {
+    return this.makeRequest<Product>(`/products/${id}`, {
+      method: 'GET',
+    });
+  }
+
+  async getProductsByShop(shopId: string): Promise<ProductsApiResponse> {
+    return this.makeRequest<Product[]>(`/products/shop/${shopId}`, {
+      method: 'GET',
+    });
+  }
+
+  async searchProducts(query: string): Promise<ProductsApiResponse> {
+    return this.makeRequest<Product[]>(`/products/search?query=${encodeURIComponent(query)}`, {
+      method: 'GET',
+    });
+  }
+
+  async createProduct(data: CreateProductRequest): Promise<ProductApiResponse> {
+    return this.makeRequest<Product>('/products', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateProduct(id: string, data: UpdateProductRequest): Promise<ProductApiResponse> {
+    return this.makeRequest<Product>(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteProduct(id: string): Promise<ApiResponse<string>> {
+    return this.makeRequest<string>(`/products/${id}`, {
+      method: 'DELETE',
+    });
   }
 }
 

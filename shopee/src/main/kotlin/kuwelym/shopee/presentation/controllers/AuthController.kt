@@ -6,11 +6,10 @@ import kuwelym.shopee.application.dto.ShopRegistrationRequest
 import kuwelym.shopee.application.usecases.AuthenticateUserUseCase
 import kuwelym.shopee.application.usecases.RegisterBuyerUseCase
 import kuwelym.shopee.application.usecases.RegisterShopUseCase
-import kuwelym.shopee.domain.entities.Buyer
-import kuwelym.shopee.domain.entities.Shop
 import kuwelym.shopee.presentation.dto.ApiResponse
 import kuwelym.shopee.presentation.dto.BuyerResponse
 import kuwelym.shopee.presentation.dto.ShopResponse
+import kuwelym.shopee.presentation.dto.toResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -103,32 +102,3 @@ class AuthController(
             )
     }
 }
-
-// Extension functions to map domain entities to presentation DTOs
-fun Buyer.toResponse(): BuyerResponse =
-    BuyerResponse(
-        id = this.id,
-        username = this.username,
-        email = this.email,
-        phoneNumber = this.phoneNumber,
-        fullName = this.fullName,
-        address = this.address,
-        createdAt = this.createdAt,
-        isActive = this.isActive,
-    )
-
-fun Shop.toResponse(): ShopResponse =
-    ShopResponse(
-        id = this.id,
-        username = this.username,
-        email = this.email,
-        phoneNumber = this.phoneNumber,
-        businessName = this.businessName,
-        shopName = this.shopName,
-        taxCode = this.taxCode,
-        businessAddress = this.businessAddress,
-        businessDescription = this.businessDescription,
-        businessType = this.businessType,
-        createdAt = this.createdAt,
-        isActive = this.isActive,
-    )

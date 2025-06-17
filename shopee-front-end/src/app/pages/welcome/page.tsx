@@ -46,9 +46,28 @@ export default function Welcome() {
             {user.userType === 'BUYER' ? '🛍️' : '🏪'} {user.userType}
           </div>
         </div>
-        <button onClick={handleLogout} className={styles.logoutButton}>
-          Logout
-        </button>
+        
+        <div className={styles.actions}>
+          {user.userType === 'BUYER' ? (
+            <button 
+              onClick={() => router.push('/pages/products')}
+              className={styles.primaryButton}
+            >
+              Browse Products 🛍️
+            </button>
+          ) : (
+            <button 
+              onClick={() => router.push('/pages/shop/products')}
+              className={styles.primaryButton}
+            >
+              Manage Products 🏪
+            </button>
+          )}
+          
+          <button onClick={handleLogout} className={styles.logoutButton}>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
