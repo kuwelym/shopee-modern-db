@@ -63,8 +63,7 @@ export function useShopRegister() {
     }
 
     try {
-      // Remove confirmPassword from the request data
-      const { confirmPassword, ...registrationData } = data;
+      const { ...registrationData } = data;
       
       const response = await apiService.registerShop(registrationData);
       

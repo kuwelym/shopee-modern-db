@@ -50,8 +50,7 @@ export function useBuyerRegister() {
     }
 
     try {
-      // Remove confirmPassword from the request data
-      const { confirmPassword, ...registrationData } = data;
+      const { ...registrationData } = data;
       
       const response = await apiService.registerBuyer(registrationData);
       
