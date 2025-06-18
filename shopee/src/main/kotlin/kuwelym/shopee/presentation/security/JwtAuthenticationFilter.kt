@@ -50,11 +50,7 @@ class JwtAuthenticationFilter(
                     } catch (e: Exception) {
                         logger.error("Failed to load user details for username: $username", e)
                     }
-                } else {
-                    println("JwtAuthenticationFilter: Username is null or authentication already exists")
                 }
-            } else {
-                println("JwtAuthenticationFilter: Token validation failed")
             }
         } catch (e: Exception) {
             // Log error but don't fail the filter chain

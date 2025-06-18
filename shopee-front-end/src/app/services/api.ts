@@ -20,7 +20,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 class ApiService {
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    skipAuth: boolean = false
   ): Promise<ApiResponse<T>> {
     const url = `${API_BASE_URL}${endpoint}`;
     
@@ -32,12 +33,15 @@ class ApiService {
       ...options,
     };
 
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        Authorization: `Bearer ${token}`,
-      };
+    // Don't add Authorization header for auth endpoints
+    if (!skipAuth) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers = {
+          ...config.headers,
+          Authorization: `Bearer ${token}`,
+        };
+      }
     }
 
     try {
@@ -72,21 +76,21 @@ class ApiService {
     return this.makeRequest<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
-    });
+    }, true); // Skip auth header for login
   }
 
   async registerBuyer(data: BuyerRegistrationRequest): Promise<ApiResponse<BuyerResponse>> {
     return this.makeRequest<BuyerResponse>('/auth/register/buyer', {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    }, true); // Skip auth header for registration
   }
 
   async registerShop(data: ShopRegistrationRequest): Promise<ApiResponse<ShopResponse>> {
     return this.makeRequest<ShopResponse>('/auth/register/shop', {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    }, true); // Skip auth header for registration
   }
 
   // Utility methods

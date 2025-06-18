@@ -1,5 +1,6 @@
 package kuwelym.shopee.presentation.security
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -18,6 +19,8 @@ import org.springframework.web.filter.CorsFilter
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    @Value("\${cors.allowed-origins:http://localhost:3000,http://127.0.0.1:3000,http://localhost:*,http://127.0.0.1:*}")
+    private val allowedOrigins: String,
 ) {
     init {
         // Set security context holder strategy to work with coroutines
@@ -53,7 +56,12 @@ class SecurityConfig(
     fun corsFilter(): CorsFilter {
         val config = CorsConfiguration()
         config.allowCredentials = true
-        config.addAllowedOriginPattern("http://localhost:3000")
+
+        // Add allowed origins from configuration
+        allowedOrigins.split(",").forEach { origin ->
+            config.addAllowedOriginPattern(origin.trim())
+        }
+
         config.addAllowedHeader("*")
         config.addAllowedMethod("*")
 

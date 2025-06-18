@@ -15,6 +15,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
+        
+        // Check if token is expired
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (payload.exp && payload.exp < currentTime) {
+          console.log('Token expired, clearing...');
+          apiService.clearAuthToken();
+          setIsLoading(false);
+          return;
+        }
+        
         const userData: User = {
           username: payload.sub || '',
           userType: payload.userType || 'BUYER',
