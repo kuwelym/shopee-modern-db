@@ -1,5 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
-import styles from '../style.module.scss';
+import styles from '../../style.module.scss';
 import { ShopRegistrationForm } from './types';
 
 interface BasicAccountInfoProps {
