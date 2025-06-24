@@ -9,3 +9,4 @@ class ShopeeApplication
 fun main(args: Array<String>) {
     runApplication<ShopeeApplication>(*args)
 }
+

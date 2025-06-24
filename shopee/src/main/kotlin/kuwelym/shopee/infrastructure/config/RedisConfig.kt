@@ -4,16 +4,30 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 @Configuration
 class RedisConfig {
     @Bean
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, String> {
-        val template = RedisTemplate<String, String>()
+    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Any> {
+        val template = RedisTemplate<String, Any>()
         template.connectionFactory = connectionFactory
+
         template.keySerializer = StringRedisSerializer()
-        template.valueSerializer = StringRedisSerializer()
+        template.hashKeySerializer = StringRedisSerializer()
+
+        val objectMapper = ObjectMapper().apply {
+            registerModule(KotlinModule())
+        }
+        val jsonSerializer = Jackson2JsonRedisSerializer(objectMapper, Any::class.java)
+
+        template.valueSerializer = jsonSerializer
+        template.hashValueSerializer = jsonSerializer
+
+        template.afterPropertiesSet()
         return template
     }
 }

@@ -25,7 +25,7 @@ class SecurityConfig(
     init {
         // Set security context holder strategy to work with coroutines
         org.springframework.security.core.context.SecurityContextHolder.setStrategyName(
-            org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL,
+        org.springframework.security.core.context.SecurityContextHolder.MODE_INHERITABLETHREADLOCAL,
         )
     }
 
@@ -39,11 +39,14 @@ class SecurityConfig(
             .cors { }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/**").permitAll()
+                //it.requestMatchers("/cart/**").authenticated()
                 // only permit get request to products
                 it.requestMatchers(HttpMethod.PUT, "/products/**")
                 it.requestMatchers(HttpMethod.DELETE, "/products/**")
                 it.requestMatchers("/products/**").permitAll()
+
                 it.anyRequest().authenticated()
+
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
