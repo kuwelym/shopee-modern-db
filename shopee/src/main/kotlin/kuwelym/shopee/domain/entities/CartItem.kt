@@ -6,5 +6,5 @@ data class CartItem(
     val productId: Long,
     val productName: String,
     var quantity: Int,
-    val price: Double
+    val price: Double,
 ) : Serializable

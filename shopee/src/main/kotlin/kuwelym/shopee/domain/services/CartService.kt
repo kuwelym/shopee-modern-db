@@ -2,17 +2,20 @@ package kuwelym.shopee.domain.services
 
 import kuwelym.shopee.domain.entities.Cart
 import kuwelym.shopee.domain.entities.CartItem
+import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.time.Duration
-import org.slf4j.LoggerFactory
 
 @Service
 class CartService(
-    private val redisTemplate: RedisTemplate<String, Any>
+    private val redisTemplate: RedisTemplate<String, Any>,
 ) {
     private val logger = LoggerFactory.getLogger(CartService::class.java)
-    private val CART_KEY_PREFIX = "cart:" // Tiền tố cho key Redis
+
+    companion object {
+        private const val CART_KEY_PREFIX = "cart:" // Prefix for Redis keys
+    }
 
     // Lấy giỏ hàng từ Redis
     fun getCart(userId: String): Cart {
@@ -37,7 +40,13 @@ class CartService(
     }
 
     // Thêm sản phẩm vào giỏ hàng
-    fun addItemToCart(userId: String, productId: Long, productName: String, quantity: Int, price: Double): Cart {
+    fun addItemToCart(
+        userId: String,
+        productId: Long,
+        productName: String,
+        quantity: Int,
+        price: Double,
+    ): Cart {
         val cart = getCart(userId)
         val newItem = CartItem(productId, productName, quantity, price)
         cart.addItem(newItem)
@@ -47,7 +56,11 @@ class CartService(
     }
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng
-    fun updateCartItemQuantity(userId: String, productId: Long, newQuantity: Int): Cart {
+    fun updateCartItemQuantity(
+        userId: String,
+        productId: Long,
+        newQuantity: Int,
+    ): Cart {
         val cart = getCart(userId)
         cart.updateItemQuantity(productId, newQuantity)
         saveCart(cart)
@@ -56,7 +69,10 @@ class CartService(
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
-    fun removeItemFromCart(userId: String, productId: Long): Cart {
+    fun removeItemFromCart(
+        userId: String,
+        productId: Long,
+    ): Cart {
         val cart = getCart(userId)
         cart.removeItem(productId)
         saveCart(cart)

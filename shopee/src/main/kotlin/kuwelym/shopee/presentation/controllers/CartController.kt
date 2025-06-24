@@ -1,18 +1,26 @@
 package kuwelym.shopee.presentation.controllers
 
 import kuwelym.shopee.domain.entities.Cart
-import kuwelym.shopee.services.CartService
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import kuwelym.shopee.domain.services.CartService
 import org.slf4j.LoggerFactory
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/cart")
 @CrossOrigin(origins = ["http://localhost:3000", "http://127.0.0.1:3000"])
 class CartController(
-    private val cartService: CartService
+    private val cartService: CartService,
 ) {
     private val logger = LoggerFactory.getLogger(CartController::class.java)
 
@@ -21,20 +29,19 @@ class CartController(
         val productId: Long,
         val productName: String?,
         val quantity: Int,
-        val price: Double?
+        val price: Double?,
     )
 
     // Lấy userId
     private fun getCurrentUserId(): String {
-    val authentication: Authentication = SecurityContextHolder.getContext().authentication
-    val userId = authentication.name
-    if (userId == "anonymousUser" || authentication.principal == "anonymousUser") {
-        logger.warn("Attempt to access cart with anonymous user. This endpoint requires authentication.")
-        throw IllegalStateException("User not authenticated.")
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        val userId = authentication.name
+        if (userId == "anonymousUser" || authentication.principal == "anonymousUser") {
+            logger.warn("Attempt to access cart with anonymous user. This endpoint requires authentication.")
+            throw IllegalStateException("User not authenticated.")
+        }
+        return userId
     }
-    return userId
-}
-   
 
     // Lấy giỏ hàng của người dùng hiện tại
     @GetMapping
@@ -47,37 +54,48 @@ class CartController(
 
     // Thêm sản phẩm vào giỏ hàng hoặc cập nhật số lượng
     @PostMapping("/add")
-    fun addItemToCart(@RequestBody request: AddItemRequest): ResponseEntity<Cart> {
+    fun addItemToCart(
+        @RequestBody request: AddItemRequest,
+    ): ResponseEntity<Cart> {
         val userId = getCurrentUserId()
         logger.info("POST /api/cart/add request for user: $userId, product: ${request.productId}")
 
-        val productName = request.productName ?: throw IllegalArgumentException("Product name is required for adding item.")
+        val productName =
+            request.productName ?: throw IllegalArgumentException("Product name is required for adding item.")
         val price = request.price ?: throw IllegalArgumentException("Price is required for adding item.")
 
-        val cart = cartService.addItemToCart(
-            userId,
-            request.productId,
-            productName,
-            request.quantity,
-            price
-        )
+        val cart =
+            cartService.addItemToCart(
+                userId,
+                request.productId,
+                productName,
+                request.quantity,
+                price,
+            )
         return ResponseEntity.ok(cart)
     }
 
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     @PutMapping("/update-quantity")
-    fun updateItemQuantity(@RequestBody request: AddItemRequest): ResponseEntity<Cart> {
+    fun updateItemQuantity(
+        @RequestBody request: AddItemRequest,
+    ): ResponseEntity<Cart> {
         val userId = getCurrentUserId()
-        logger.info("PUT /api/cart/update-quantity request for user: $userId, product: ${request.productId}, new quantity: ${request.quantity}")
+        logger.info(
+            "PUT /api/cart/update-quantity request for user: $userId, product: ${request.productId}," +
+                " new quantity: ${request.quantity}",
+        )
         val cart = cartService.updateCartItemQuantity(userId, request.productId, request.quantity)
         return ResponseEntity.ok(cart)
     }
 
     // Xóa sản phẩm khỏi giỏ hàng
     @DeleteMapping("/remove/{productId}")
-    fun removeItemFromCart(@PathVariable productId: Long): ResponseEntity<Cart> {
+    fun removeItemFromCart(
+        @PathVariable productId: Long,
+    ): ResponseEntity<Cart> {
         val userId = getCurrentUserId()
-        logger.info("DELETE /api/cart/remove/${productId} request for user: $userId")
+        logger.info("DELETE /api/cart/remove/$productId request for user: $userId")
         val cart = cartService.removeItemFromCart(userId, productId)
         return ResponseEntity.ok(cart)
     }

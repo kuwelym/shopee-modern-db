@@ -1,14 +1,12 @@
 package kuwelym.shopee.domain.entities
 
 import java.io.Serializable
-import java.util.* 
 
 data class Cart(
     val userId: String,
     var items: MutableList<CartItem> = mutableListOf(),
-    var totalAmount: Double = 0.0
+    var totalAmount: Double = 0.0,
 ) : Serializable {
-
     init {
         calculateTotalAmount()
     }
@@ -32,7 +30,10 @@ data class Cart(
         calculateTotalAmount()
     }
 
-    fun updateItemQuantity(productId: Long, newQuantity: Int) {
+    fun updateItemQuantity(
+        productId: Long,
+        newQuantity: Int,
+    ) {
         if (newQuantity <= 0) {
             removeItem(productId)
             return
