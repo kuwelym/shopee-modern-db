@@ -33,11 +33,10 @@ export function useLogin() {
         message: 'Login successful!', 
         type: 'success' 
       });
-      
-      // Redirect after successful login
+      // Reload trang để context chắc chắn cập nhật user
       setTimeout(() => {
-        router.push('/pages/welcome');
-      }, 1000);
+        window.location.href = '/pages/welcome';
+      }, 1200);
     } catch (error) {
       console.error('Login error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -59,4 +58,4 @@ export function useLogin() {
     onSubmit: handleSubmit(onSubmit),
     clearNotification,
   };
-} 
+}

@@ -1,0 +1,38 @@
+.toastSuccess {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: #28a745;
+  color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2000;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.toastError {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: #dc3545;
+  color: #fff;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2000;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.toastClose {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  cursor: pointer;
+}
