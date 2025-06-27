@@ -13,20 +13,11 @@ export function useProducts() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/pages/auth/login');
-      return;
-    }
-
-    if (user && user.userType === 'SHOP') {
-      router.push('/pages/shop/products');
-      return;
-    }
-
-    if (user) {
-      loadProducts();
-    }
-  }, [user, isLoading, router]);
+    // Không redirect ở hook này, chỉ fetch sản phẩm cho guest/home
+    // Đảm bảo loadProducts không bị stale closure
+    loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isLoading]);
 
   const loadProducts = useCallback(async () => {
     try {
@@ -43,7 +34,7 @@ export function useProducts() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setProducts, setLoading, setError]);
 
   const handleSearch = useCallback(async () => {
     if (!searchQuery.trim()) {
@@ -79,9 +70,8 @@ export function useProducts() {
     }).format(price);
   }, []);
 
-  const navigateBack = useCallback(() => {
-    router.push('/pages/welcome');
-  }, [router]);
+
+  // Xóa navigateBack vì không còn trang welcome
 
   const clearError = useCallback(() => {
     setError(null);
@@ -102,7 +92,6 @@ export function useProducts() {
     clearSearch,
     loadProducts,
     formatPrice,
-    navigateBack,
     clearError,
   };
 } 

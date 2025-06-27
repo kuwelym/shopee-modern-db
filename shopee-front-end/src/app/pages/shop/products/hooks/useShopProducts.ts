@@ -184,9 +184,7 @@ export function useShopProducts() {
     }).format(price);
   }, []);
 
-  const navigateBack = useCallback(() => {
-    router.push('/pages/welcome');
-  }, [router]);
+  // Đã xoá navigateBack vì không còn trang welcome
 
   const clearError = useCallback(() => {
     setError(null);
@@ -217,7 +215,6 @@ export function useShopProducts() {
     handleDelete,
     resetForm,
     formatPrice,
-    navigateBack,
     clearError,
     openCreateForm,
     setShowCreateForm,

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { type ReactNode, useState } from "react";
+import { useRouter } from "next/navigation";
 import BaseLayout from "../components/BaseLayout";
 import { useProducts } from "../pages/products/hooks/useProducts";
 import type { Product } from "../types/product";
@@ -18,6 +19,7 @@ type ModalProps = {
 export default function BuyerHomePage() {
   const { products, loading, searchQuery, setSearchQuery, handleSearch, clearSearch, formatPrice } = useProducts();
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [cart, setCart] = React.useState<{product: Product, quantity: number}[]>([]); // Giỏ hàng: product + quantity
   const [cartLoading, setCartLoading] = React.useState(false);
   const [selected, setSelected] = React.useState<string[]>([]); // id các sản phẩm (string)
@@ -49,19 +51,25 @@ export default function BuyerHomePage() {
       setCartLoading(true);
       cartApi.fetchCart(user.token)
         .then(data => {
-          setCart(Array.isArray(data.items) ? data.items.map((item: any) => ({
-            product: {
-              id: item.productId,
-              name: item.productName,
-              price: item.price,
-              imageUrls: item.imageUrls || [],
-              description: item.description || '',
-              stock: item.stock || 0,
-              shopId: item.shopId || '',
-              createdAt: '', updatedAt: '', isActive: true
-            },
-            quantity: item.quantity
-          })) : []);
+          setCart(
+            Array.isArray(data.items)
+              ? data.items
+                  .filter((item: any) => item.productId && item.productName)
+                  .map((item: any) => ({
+                    product: {
+                      id: item.productId,
+                      name: item.productName,
+                      price: item.price,
+                      imageUrls: item.imageUrls || [],
+                      description: item.description || '',
+                      stock: item.stock || 0,
+                      shopId: item.shopId || '',
+                      createdAt: '', updatedAt: '', isActive: true
+                    },
+                    quantity: item.quantity
+                  }))
+              : []
+          );
         })
         .catch(() => setCart([]))
         .finally(() => setCartLoading(false));
@@ -352,7 +360,7 @@ export default function BuyerHomePage() {
             <button style={menuBtnStyle} onClick={() => { setShowOrders(true); setMenuOpen(false); }}><span style={iconStyle}>📦</span> Theo dõi đơn hàng</button>
             <button style={menuBtnStyle} onClick={() => { setShowHistory(true); setMenuOpen(false); }}><span style={iconStyle}>🕑</span> Lịch sử mua hàng</button>
             <button style={menuBtnStyle} onClick={() => { setShowChat(true); setMenuOpen(false); }}><span style={iconStyle}>💬</span> Chat với shop</button>
-            <button style={{...menuBtnStyle,background:'#fff3e0',color:'#ff5722',border:'1.5px solid #ff9800'}} onClick={() => { logout(); setMenuOpen(false); setCart([]); setSelected([]); }}><span style={iconStyle}>🚪</span> Đăng xuất</button>
+            <button style={{...menuBtnStyle,background:'#fff3e0',color:'#ff5722',border:'1.5px solid #ff9800'}} onClick={() => { logout(); setMenuOpen(false); setCart([]); setSelected([]); router.push("/"); }}><span style={iconStyle}>🚪</span> Đăng xuất</button>
           </div>
           {/* Hiệu ứng slideInMenu */}
           <style>{`

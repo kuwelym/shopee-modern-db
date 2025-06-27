@@ -1,14 +1,20 @@
+
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import { useProducts } from "../pages/products/hooks";
-import styles from "../pages/products/style.module.scss";
-import { useRouter } from "next/navigation";
 import BaseLayout from "../components/BaseLayout";
+import { useRouter } from "next/navigation";
 
 export default function GuestPage() {
   const { products, loading, searchQuery, setSearchQuery, handleSearch, clearSearch, formatPrice } = useProducts();
-  const [filter, setFilter] = React.useState({ inStock: false, minPrice: "", maxPrice: "" });
+  const [filter, setFilter] = useState({ inStock: false, minPrice: "", maxPrice: "" });
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  // Không tự động chuyển hướng sang buyer khi đã đăng nhập
+  // Chỉ chuyển hướng khi bấm nút Đăng nhập
 
   const filteredProducts = products.filter((product) => {
     if (filter.inStock && product.stock === 0) return false;
@@ -16,6 +22,8 @@ export default function GuestPage() {
     if (filter.maxPrice && product.price > Number(filter.maxPrice)) return false;
     return true;
   });
+
+
 
   return (
     <BaseLayout
@@ -25,7 +33,30 @@ export default function GuestPage() {
       onClearSearch={clearSearch}
       showSearch={true}
     >
-      <div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 48, fontFamily: 'Garamond, serif' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', marginBottom: 48, fontFamily: 'Garamond, serif', position: 'relative' }}>
+        <button
+          onClick={() => router.push('/pages/auth/login')}
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            background: '#ff5722',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            padding: '8px 20px',
+            fontWeight: 700,
+            fontSize: 16,
+            cursor: 'pointer',
+            margin: 16,
+            zIndex: 10,
+            fontFamily: 'Garamond, serif',
+            boxShadow: '0 2px 8px #ff980033',
+            transition: 'background .2s',
+          }}
+        >
+          Đăng nhập
+        </button>
         <h2 style={{ fontSize: 28, fontWeight: 900, color: '#ff5722', margin: '0 0 24px 0', letterSpacing: 1, textAlign: 'left', fontFamily: 'Garamond, serif' }}>Sản phẩm nổi bật</h2>
         {loading ? (
           <div style={{ textAlign: 'center', color: '#ff9800', fontWeight: 700, fontSize: 20, padding: 32, fontFamily: 'Garamond, serif' }}>Đang tải sản phẩm...</div>

@@ -42,21 +42,7 @@ export default function Welcome() {
         <img src="/vercel.svg" alt="Shopee Modern" style={{ width: 80, height: 80, background: '#fff', borderRadius: '50%', marginBottom: 16, boxShadow: '0 2px 8px #0001' }} />
         <h1 style={{ fontSize: 40, fontWeight: 900, margin: 0, color: '#fff' }}>Shopee Modern</h1>
         <p style={{ fontSize: 22, color: '#fffde7', margin: '12px 0 24px 0', fontWeight: 500 }}>Mua sắm thông minh, trải nghiệm hiện đại!</p>
-        <div className={styles.heroActions} style={{ display: 'flex', justifyContent: 'center', gap: 18, marginTop: 12 }}>
-          {user.userType === 'BUYER' && (
-            <Link href="/pages/products">
-              <button className={styles.primaryBtn} style={{ background: '#fff', color: '#ff9800', fontWeight: 800, fontSize: 18, borderRadius: 8, padding: '12px 32px', boxShadow: '0 2px 8px #ff980033' }}>Khám phá sản phẩm</button>
-            </Link>
-          )}
-          {user.userType === 'SHOP' && (
-            <Link href="/pages/shop/products">
-              <button className={styles.primaryBtn} style={{ background: '#fff', color: '#ff9800', fontWeight: 800, fontSize: 18, borderRadius: 8, padding: '12px 32px', boxShadow: '0 2px 8px #ff980033' }}>Quản lý sản phẩm</button>
-            </Link>
-          )}
-          <button onClick={handleLogout} className={styles.logoutButton} style={{ background: '#fff', color: '#ff5722', fontWeight: 800, fontSize: 18, borderRadius: 8, padding: '12px 32px', boxShadow: '0 2px 8px #ff980033' }}>
-            Đăng xuất
-          </button>
-        </div>
+        {/* Đã xóa toàn bộ nút chuyển trang (cam/trắng) để không còn nút nào ngoài giao diện giới thiệu */}
       </header>
       <section className={styles.features} style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 32, margin: '48px auto', maxWidth: 1000 }}>
         <div className={styles.featureCard} style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 12px #ff980033', padding: 32, minWidth: 220, textAlign: 'center' }}>

@@ -10,7 +10,7 @@ interface LoginForm {
 
 export function useLogin() {
   const router = useRouter();
-  const { login, isLoading: authLoading } = useAuth();
+  const { login, isLoading: authLoading, user } = useAuth();
   const [notification, setNotification] = useState<{ 
     message: string; 
     type: 'success' | 'error' | 'info' 
@@ -33,9 +33,15 @@ export function useLogin() {
         message: 'Login successful!', 
         type: 'success' 
       });
-      // Reload trang để context chắc chắn cập nhật user
+      // Điều hướng theo userType sau khi login
       setTimeout(() => {
-        window.location.href = '/pages/welcome';
+        if (user && user.userType === 'BUYER') {
+          router.push('/buyer');
+        } else if (user && user.userType === 'SHOP') {
+          router.push('/pages/shop/products');
+        } else {
+          router.push('/');
+        }
       }, 1200);
     } catch (error) {
       console.error('Login error:', error);
