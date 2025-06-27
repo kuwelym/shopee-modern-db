@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/api/cart")
 @CrossOrigin(origins = ["http://localhost:3000", "http://127.0.0.1:3000"])
 class CartController(
     private val cartService: CartService,
@@ -26,7 +26,7 @@ class CartController(
 
     // DTO cho request thêm/cập nhật sản phẩm vào giỏ
     data class AddItemRequest(
-        val productId: Long,
+        val productId: String,
         val productName: String?,
         val quantity: Int,
         val price: Double?,
@@ -92,7 +92,7 @@ class CartController(
     // Xóa sản phẩm khỏi giỏ hàng
     @DeleteMapping("/remove/{productId}")
     fun removeItemFromCart(
-        @PathVariable productId: Long,
+        @PathVariable productId: String,
     ): ResponseEntity<Cart> {
         val userId = getCurrentUserId()
         logger.info("DELETE /api/cart/remove/$productId request for user: $userId")

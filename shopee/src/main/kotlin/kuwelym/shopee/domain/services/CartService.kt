@@ -16,6 +16,7 @@ class CartService(
     companion object {
         private const val CART_KEY_PREFIX = "cart:" // Prefix for Redis keys
     }
+    private val CART_TTL = Duration.ofDays(2)
 
     // Lấy giỏ hàng từ Redis
     fun getCart(userId: String): Cart {
@@ -42,7 +43,7 @@ class CartService(
     // Thêm sản phẩm vào giỏ hàng
     fun addItemToCart(
         userId: String,
-        productId: Long,
+        productId: String,
         productName: String,
         quantity: Int,
         price: Double,
@@ -58,7 +59,7 @@ class CartService(
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     fun updateCartItemQuantity(
         userId: String,
-        productId: Long,
+        productId: String,
         newQuantity: Int,
     ): Cart {
         val cart = getCart(userId)
@@ -71,7 +72,7 @@ class CartService(
     // Xóa sản phẩm khỏi giỏ hàng
     fun removeItemFromCart(
         userId: String,
-        productId: Long,
+        productId: String,
     ): Cart {
         val cart = getCart(userId)
         cart.removeItem(productId)

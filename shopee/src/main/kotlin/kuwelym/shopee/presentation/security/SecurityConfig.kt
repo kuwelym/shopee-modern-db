@@ -39,7 +39,7 @@ class SecurityConfig(
             .cors { }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/**").permitAll()
-                // it.requestMatchers("/cart/**").authenticated()
+                it.requestMatchers("/api/cart/**").authenticated()
                 // only permit get request to products
                 it.requestMatchers(HttpMethod.PUT, "/products/**")
                 it.requestMatchers(HttpMethod.DELETE, "/products/**")

@@ -1,6 +1,7 @@
 package kuwelym.shopee.domain.entities
 
 import java.io.Serializable
+import java.util.Collections
 
 data class Cart(
     val userId: String,
@@ -14,6 +15,11 @@ data class Cart(
     fun calculateTotalAmount() {
         this.totalAmount = items.sumOf { it.quantity * it.price }
     }
+    
+    fun clearCart() {
+        items.clear()
+        totalAmount = 0.0
+    }
 
     fun addItem(newItem: CartItem) {
         val existingItem = items.find { it.productId == newItem.productId }
@@ -22,25 +28,26 @@ data class Cart(
         } else {
             items.add(newItem)
         }
-        calculateTotalAmount() // Cập nhật lại tổng tiền sau khi thêm/cập nhật
+        calculateTotalAmount()
     }
 
-    fun removeItem(productId: Long) {
+    fun removeItem(productId: String) {
+        val initialSize = items.size
         items.removeIf { it.productId == productId }
-        calculateTotalAmount()
+        if (items.size < initialSize) {
+            calculateTotalAmount()
+        }
     }
 
-    fun updateItemQuantity(
-        productId: Long,
-        newQuantity: Int,
-    ) {
-        if (newQuantity <= 0) {
-            removeItem(productId)
-            return
+    fun updateItemQuantity(productId: String, newQuantity: Int) {
+        val existingItem = items.find { it.productId == productId }
+        if (existingItem != null) {
+            if (newQuantity <= 0) {
+                items.remove(existingItem)
+            } else {
+                existingItem.quantity = newQuantity
+            }
+            calculateTotalAmount()
         }
-        items.find { it.productId == productId }?.let { item ->
-            item.quantity = newQuantity
-        }
-        calculateTotalAmount()
     }
 }
