@@ -39,6 +39,8 @@ class SecurityConfig(
             .cors { }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/**").permitAll()
+                // WebSocket endpoints
+                it.requestMatchers("/ws/**").permitAll()
                 // only permit get request to products
                 it.requestMatchers(HttpMethod.PUT, "/products/**")
                 it.requestMatchers(HttpMethod.DELETE, "/products/**")
